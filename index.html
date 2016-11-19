@@ -9,7 +9,7 @@
 <body>
 
     <h1>time:</h1>
-    <p><span class="time">0</span> / 30 seconds</p>
+    <p><span class="time">0</span> of 30 seconds left</p>
     <br>
 
     <button class="record">record</button>
@@ -25,20 +25,28 @@ var record = document.querySelector('.record');
 var stop = document.querySelector('.stop');
 var soundClips = document.querySelector('.body');
 var time = document.querySelector('.time');
+var timer;
+
+
+stop.disabled = true; // Keep stop button off until recording is made
 
 // Count up to 30 seconds w/ Reset conditional
-function countTo30EachSecond(counter) {
-  var secondsCounter = counter;
+function countTo30EachSecond() {
+  var secondsCounter = 0;
   timer = setInterval(function(){
-    if (secondsCounter <= 30 && counter == true) {
+    if (secondsCounter < 30) {
       secondsCounter += 1;
     } else {
-      time.innerHTML = 0;
-      window.clearInterval(timer);
+      resetTimer();
       stop.click();
     }
     time.innerHTML = secondsCounter;
   }, 1000)
+}
+
+function resetTimer() {
+  window.clearInterval(timer);
+  time.innerHTML = 0;
 }
 
 // Check if the user has .getUserMedia
@@ -53,7 +61,7 @@ if (navigator.getUserMedia) {
     var mediaRecorder = new MediaRecorder(stream);
 
     record.onclick = function() {
-      countTo30EachSecond(0);
+      countTo30EachSecond();
       mediaRecorder.start();
       record.style.background = "red";
       stop.disabled = false;
@@ -61,13 +69,62 @@ if (navigator.getUserMedia) {
     };
 
     stop.onclick = function() {
-      countTo30EachSecond(false);
+      resetTimer()
       mediaRecorder.stop();
       record.style.background = "";
       record.style.color = "";
       stop.disabled = true;
       record.disabled = false;
     };
+
+    mediaRecorder.onstop = function(e) {
+      console.log("data available after MediaRecorder.stop() called.");
+
+      var clipName = prompt('Enter a name for your sound clip?','My unnamed clip');
+      console.log(clipName);
+      var clipContainer = document.createElement('article');
+      var clipLabel = document.createElement('p');
+      var lineBreak = document.createElement('br');
+      var audio = document.createElement('audio');
+      var deleteButton = document.createElement('button');
+
+      clipContainer.classList.add('clip');
+      audio.setAttribute('controls', '');
+      deleteButton.textContent = 'Delete';
+      deleteButton.className = 'delete';
+
+      if(clipName === null) {
+        clipLabel.textContent = 'My unnamed clip';
+      } else {
+        clipLabel.textContent = clipName;
+      }
+
+      clipContainer.appendChild(clipLabel);
+      clipContainer.appendChild(audio);
+      clipContainer.appendChild(deleteButton);
+      clipContainer.appendChild(lineBreak);
+      soundClips.insertBefore(clipContainer, soundClips.firstChild);
+
+
+      audio.controls = true;
+      var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+      chunks = [];
+      var audioURL = window.URL.createObjectURL(blob);
+      audio.src = audioURL;
+      audio.play();
+      console.log("recorder stopped");
+
+
+      // delete sound
+      deleteButton.onclick = function(e) {
+        eventTarget = e.target;
+        eventTarget.parentNode.parentNode.removeChild(evtTgt.parentNode);
+      }
+    }
+
+    mediaRecorder.ondataavailable = function(e) {
+      chunks.push(e.data);
+    }
   };
 
   // Fail
