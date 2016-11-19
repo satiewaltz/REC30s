@@ -27,6 +27,8 @@ var soundClips = document.querySelector('.body');
 var time = document.querySelector('.time');
 var timer;
 
+
+// Count up to 30 seconds
 function countTo30EachSecond() {
   var secondsCounter = 0;
   timer = setInterval(function(){
@@ -40,11 +42,64 @@ function countTo30EachSecond() {
   }, 1000)
 }
 
+// Reset timer
 function resetTimer() {
   window.clearInterval(timer);
   time.innerHTML = 0;
 }
 
-  </script>
+
+// Check if the user has .getUserMedia
+if (navigator.getUserMedia) {
+  console.log('getUserMedia supported.');
+
+  // Only grab any devices that can return audio
+  var constraints = { audio: true };
+  // Store data from audio stream in here
+  var chunks = [];
+
+  var onSuccess = function(stream) {
+    var mediaRecorder = new MediaRecorder(stream);
+
+    record.onclick = function() {
+      mediaRecorder.start();
+      record.style.background = "red";
+      stop.disabled = false;
+      record.disabled = true;
+      countTo30EachSecond();
+    };
+
+    stop.onclick = function() {
+      resetTimer();
+      mediaRecorder.stop();
+      record.style.background = "";
+      record.style.color = "";
+      stop.disabled = true;
+      record.disabled = false;
+    };
+  };
+
+  var onError = function(err) {
+    console.log('Uh oh! The following error occured: ' + err);
+  };
+
+  navigator.getUserMedia(constraints, onSuccess, onError);
+
+} else {
+   console.log('getUserMedia not supported on your browser!');
+}
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
 </body>
 </html>
