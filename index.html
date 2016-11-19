@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title></title>
+  <link rel="stylesheet" href="">
+</head>
+<body>
+
+    <h1>time:</h1>
+    <p><span class="time">0</span> / 30 seconds</p>
+    <br>
+
+    <button class="record">record</button>
+    <button class="stop">Stop</button>
+
+    <hr>
+    <br>
+    <div class="body"></div>
+
+
+<script>
+
+
+var record = document.querySelector('.record');
+var stop = document.querySelector('.stop');
+var soundClips = document.querySelector('.body');
+var time = document.querySelector('.time');
+var timer;
+
+// disable stop button while not recording
+
+
+function countTo30EachSecond() {
+  var secondsCounter = 0;
+  timer = setInterval(function(){
+    if (secondsCounter <= 30) {
+      secondsCounter += 1;
+    } else {
+      resetTimer();
+      stop.click();
+    }
+    time.innerHTML = secondsCounter;
+  }, 1000)
+}
+
+function resetTimer() {
+  window.clearInterval(timer);
+  time.innerHTML = 0;
+}
+
+  </script>
+</body>
+</html>
