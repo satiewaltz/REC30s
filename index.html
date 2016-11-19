@@ -26,7 +26,7 @@ var stop = document.querySelector('.stop');
 var soundClips = document.querySelector('.body');
 var time = document.querySelector('.time');
 
-// Count up to 30 seconds w/ Reset
+// Count up to 30 seconds w/ Reset conditional
 function countTo30EachSecond(counter) {
   var secondsCounter = counter;
   timer = setInterval(function(){
@@ -53,11 +53,11 @@ if (navigator.getUserMedia) {
     var mediaRecorder = new MediaRecorder(stream);
 
     record.onclick = function() {
+      countTo30EachSecond(0);
       mediaRecorder.start();
       record.style.background = "red";
       stop.disabled = false;
       record.disabled = true;
-      countTo30EachSecond(0);
     };
 
     stop.onclick = function() {
