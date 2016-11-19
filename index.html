@@ -25,39 +25,30 @@ var record = document.querySelector('.record');
 var stop = document.querySelector('.stop');
 var soundClips = document.querySelector('.body');
 var time = document.querySelector('.time');
-var timer;
 
-
-// Count up to 30 seconds
-function countTo30EachSecond() {
-  var secondsCounter = 0;
+// Count up to 30 seconds w/ Reset
+function countTo30EachSecond(counter) {
+  var secondsCounter = counter;
   timer = setInterval(function(){
-    if (secondsCounter <= 30) {
+    if (secondsCounter <= 30 && counter == true) {
       secondsCounter += 1;
     } else {
-      resetTimer();
+      time.innerHTML = 0;
+      window.clearInterval(timer);
       stop.click();
     }
     time.innerHTML = secondsCounter;
   }, 1000)
 }
 
-// Reset timer
-function resetTimer() {
-  window.clearInterval(timer);
-  time.innerHTML = 0;
-}
-
-
 // Check if the user has .getUserMedia
 if (navigator.getUserMedia) {
-  console.log('getUserMedia supported.');
-
   // Only grab any devices that can return audio
   var constraints = { audio: true };
   // Store data from audio stream in here
   var chunks = [];
 
+  // Success
   var onSuccess = function(stream) {
     var mediaRecorder = new MediaRecorder(stream);
 
@@ -66,11 +57,11 @@ if (navigator.getUserMedia) {
       record.style.background = "red";
       stop.disabled = false;
       record.disabled = true;
-      countTo30EachSecond();
+      countTo30EachSecond(0);
     };
 
     stop.onclick = function() {
-      resetTimer();
+      countTo30EachSecond(false);
       mediaRecorder.stop();
       record.style.background = "";
       record.style.color = "";
@@ -79,6 +70,7 @@ if (navigator.getUserMedia) {
     };
   };
 
+  // Fail
   var onError = function(err) {
     console.log('Uh oh! The following error occured: ' + err);
   };
@@ -86,7 +78,7 @@ if (navigator.getUserMedia) {
   navigator.getUserMedia(constraints, onSuccess, onError);
 
 } else {
-   console.log('getUserMedia not supported on your browser!');
+  alert(`Your broswer doesn't support media devices. Try switching to a more modern browser!`);
 }
 
 
