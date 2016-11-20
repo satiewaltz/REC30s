@@ -31,12 +31,20 @@
       justify-content: center;
       align-items: center;
     }
-    .record-btn {
+
+    #record-btn[type="checkbox"] {
+      display: none;
+    }
+    #record-btn[type="checkbox"] + label {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: auto;
       border-radius: 100%;
-      min-height: 100px;
-      min-width: 100px;
-      /* background: #ea1f1f; */
-      background: #ff2626;
+      height: 100px;
+      width: 100px;
+      background: #ea1f1f;
+      /* background: #ff2626; */
       border-style: none;
       font-size: 2em;
       font-weight: 900;
@@ -44,6 +52,12 @@
       font-family: "Helvetica Neue", sans-serif;
       color: white;
       outline: none;
+      transition: background 300ms;
+    }
+
+    #record-btn[type="checkbox"] :hover {
+      background: #ff0000;
+      transition: background 180ms;
     }
 
     .recordings-list {
@@ -63,6 +77,7 @@
     }
 
     h1 {
+      text-align: center;
       margin-bottom: 10px;
       font-weight: 200;
       font-size: 2.5em;
@@ -96,38 +111,35 @@
 </head>
 <body>
 
-<div class="container">
+<main class="container">
+    <section>
+      <h1><span class="logo">rec</span><span class="time">30</span>s</h1>
+      <p class="details">A simple, <span class="time">30</span> second long audio recorder.<br>
+      Stop when you need to. Save when you want to.</p>
+    </section>
 
-    <h1><span class="logo">rec</span><span class="time">30</span>s</h1>
-    <p class="details">A simple, 30 second long audio recorder.<br>
-     Stop when you need to. Save when you want to. <br><br>
+    <section>
+      <input type="checkbox" id="record-btn" value="second_checkbox">
+      <label for="record-btn"><span>REC</span></label><br>
+      <p class="details">At a press of a button.</p>
+      <!-- <p><span class="time">30</span> of 30 seconds left</p> -->
+    </section>
 
-    <br>
+    <section>
+      <p>
+        Instructions:<br>
+        - Press record.<br>
+        - Make any sound. <br>
+        - The recording will end after 30 seconds automatically, or when you click again.<br>
+        - Hear back what you made.
+      </p>
+      <br>
+    </section>
 
-    <button class="record-btn">REC</button>
+    <section class="recordings-list"></section>
 
-    <p class="details">At a press of a button.</p>
-    <!-- <p><span class="time">30</span> of 30 seconds left</p> -->
-
-    <p>
-      Instructions:<br>
-      - Press record.<br>
-      - Make any sound. <br>
-      - The recording will end after 30 seconds automatically, or when you click again.<br>
-      - Hear back what you made.
-    </p>
-
-    <br>
-
-    <div class="recordings-list">
-
-    </div>
-
-    <p><em>Coded By Dave Barthly</em></p>
-
-</div>
-
-
+    <footer><em>Coded By Dave Barthly</em><footer>
+</main>
 
 <script>
 
@@ -135,7 +147,7 @@
 
 "use strict";
 
-var record = document.querySelector('.record-btn'),
+var record = document.querySelector('label'),
     soundClips = document.querySelector('.recordings-list'),
     time = document.getElementsByClassName('time'),
     isRecording = true,
@@ -220,9 +232,21 @@ if (navigator.getUserMedia) {
       audio.controls = true;
       var blob = new Blob(chunks, { "type" : "audio/mp3; codecs=opus" });
       chunks = [];
+
       var audioURL = window.URL.createObjectURL(blob);
       audio.src = audioURL;
       audio.play();
+
+      audio.addEventListener("playing", function(){
+        record.textContent = "PLY";
+        record.style.background = "green";
+      }, false);
+
+      audio.addEventListener("ended", function(){
+        record.textContent = "REC";
+        record.style.background = "red";
+      }, false);
+
       console.log("recorder stopped");
 
 
