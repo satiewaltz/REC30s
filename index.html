@@ -13,7 +13,7 @@
     body {
       margin: 0px;
       padding: 0px;
-      box-shadow: inset 0px 0px 100px 0px #c5c5c5;
+      box-shadow: inset 0px 0px 50px 0px #c5c5c5;
     }
     *, *:before, *:after {
       box-sizing: inherit;
@@ -31,7 +31,7 @@
       justify-content: center;
       align-items: center;
     }
-    .record {
+    .record-btn {
       border-radius: 100%;
       min-height: 100px;
       min-width: 100px;
@@ -43,6 +43,12 @@
       box-shadow: 0px 0px 3px 1px #aaa;
       font-family: "Helvetica Neue", sans-serif;
       color: white;
+      outline: none;
+    }
+
+    .recordings-list {
+      max-height: 175px;
+      overflow-y: scroll;
     }
     .recordings-list article {
       border-bottom: 1px solid black;
@@ -57,20 +63,33 @@
     }
 
     h1 {
+      margin-bottom: 10px;
       font-weight: 200;
       font-size: 2.5em;
     }
 
     .details {
-      font-size: 1.1em;
+      font-size: 0.90em;
       margin-top: 0px;
       font-weight: 100;
       text-align: center;
     }
 
     em {
+      margin: 0px;
       font-weight: 100;
       font-size: 0.75em;
+    }
+
+    ::-webkit-scrollbar {
+      -webkit-appearance: none;
+      width: 7px;
+      background-color: white;
+    }
+    ::-webkit-scrollbar-thumb {
+      border-radius: 4px;
+      background-color: rgba(255,0,0,0.8);
+      box-shadow: 0 0 1px rgba(255,255,255,.5);
     }
 
   </style>
@@ -79,19 +98,27 @@
 
 <div class="container">
 
-    <h1><span class="logo">rec</span>30s</h1>
-    <p class="details">A simple, 30 second long audio recorder. <br>
+    <h1><span class="logo">rec</span><span class="time">30</span>s</h1>
+    <p class="details">A simple, 30 second long audio recorder.<br>
      Stop when you need to. Save when you want to. <br><br>
-     At a press of a button.<br></p class="details">
-
-    <p><span class="time">0</span> of 30 seconds left</p>
 
     <br>
 
-    <button class="record">REC</button>
+    <button class="record-btn">REC</button>
 
-    <hr>
+    <p class="details">At a press of a button.</p>
+    <!-- <p><span class="time">30</span> of 30 seconds left</p> -->
+
+    <p>
+      Instructions:<br>
+      - Press record.<br>
+      - Make any sound. <br>
+      - The recording will end after 30 seconds automatically, or when you click again.<br>
+      - Hear back what you made.
+    </p>
+
     <br>
+
     <div class="recordings-list">
 
     </div>
@@ -104,28 +131,33 @@
 
 <script>
 
-var record = document.querySelector('.record');
-var soundClips = document.querySelector('.recordings-list');
-var time = document.querySelector('.time');
-var timer;
-var isRecording = true;
+(function(){
+
+"use strict";
+
+var record = document.querySelector('.record-btn'),
+    soundClips = document.querySelector('.recordings-list'),
+    time = document.getElementsByClassName('time'),
+    isRecording = true,
+    timer;
 
 // Count up to 30 seconds w/ Reset conditional
 function countTo30EachSecond() {
-  var secondsCounter = 0;
+  var secondsCounter = 30;
   timer = setInterval(function(){
-    if (secondsCounter < 30) {
-      secondsCounter += 1;
+    if (secondsCounter > 0) {
+      secondsCounter -= 1;
     } else {
+      secondsCounter = 30;
       record.click();
     }
-    time.innerHTML = secondsCounter;
+    [...time].forEach(el => el.textContent = secondsCounter);
   }, 1000);
 }
 
 function resetTimer() {
   window.clearInterval(timer);
-  time.innerHTML = 0;
+  [...time].forEach(el => el.textContent = 30);
 }
 
 // Check if the user has .getUserMedia
@@ -136,10 +168,10 @@ if (navigator.getUserMedia) {
   var chunks = [];
 
   // Success
-  var onSuccess = function(stream) {
+  var onSuccess = (stream) => {
     var mediaRecorder = new MediaRecorder(stream);
 
-    record.onclick = function() {
+    record.onclick = () => {
       if (isRecording) {
         isRecording = false;
         countTo30EachSecond();
@@ -156,24 +188,24 @@ if (navigator.getUserMedia) {
       }
     };
 
-    mediaRecorder.onstop = function(e) {
+    mediaRecorder.onstop = (e) => {
       console.log("data available after MediaRecorder.stop() called.");
 
-      var clipName = prompt('Enter a name for your sound clip?', 'My unnamed clip');
+      var clipName = prompt("Enter a name for your sound clip?", "My unnamed clip");
       console.log(clipName);
-      var clipContainer = document.createElement('article');
-      var clipLabel = document.createElement('p');
-      var lineBreak = document.createElement('br');
-      var audio = document.createElement('audio');
-      var deleteButton = document.createElement('button');
+      var clipContainer = document.createElement("article");
+      var clipLabel = document.createElement("p");
+      var lineBreak = document.createElement("br");
+      var audio = document.createElement("audio");
+      var deleteButton = document.createElement("button");
 
-      clipContainer.classList.add('clip');
-      audio.setAttribute('controls', '');
-      deleteButton.textContent = 'Delete';
-      deleteButton.className = 'delete';
+      clipContainer.classList.add("clip");
+      audio.setAttribute("controls", "");
+      deleteButton.textContent = "Delete";
+      deleteButton.className = "delete";
 
       if (clipName === null) {
-        clipLabel.textContent = 'My unnamed clip';
+        clipLabel.textContent = "My unnamed clip";
       } else {
         clipLabel.textContent = clipName;
       }
@@ -186,7 +218,7 @@ if (navigator.getUserMedia) {
 
 
       audio.controls = true;
-      var blob = new Blob(chunks, { 'type' : 'audio/mp3; codecs=opus' });
+      var blob = new Blob(chunks, { "type" : "audio/mp3; codecs=opus" });
       chunks = [];
       var audioURL = window.URL.createObjectURL(blob);
       audio.src = audioURL;
@@ -195,30 +227,31 @@ if (navigator.getUserMedia) {
 
 
       // delete sound
-      deleteButton.onclick = function(e) {
+      deleteButton.onclick = (e) => {
         eventTarget = e.target;
         eventTarget.parentNode.parentNode.removeChild(evtTgt.parentNode);
       };
     };
 
-    mediaRecorder.ondataavailable = function(e) {
+    mediaRecorder.ondataavailable = (e) => {
       chunks.push(e.data);
     };
   };
 
   // Fail
-  var onError = function(err) {
-    console.log('Uh oh! The following error occured: ' + err);
+  var onError = (err) => {
+    console.log("Uh oh! The following error occured: " + err);
   };
 
   navigator.getUserMedia(constraints, onSuccess, onError);
 
 } else {
-  alert("Your broswer doesn't support media devices. Try switching to a more modern browser!");
+  alert(`Your broswer doesn't support media devices.
+         Try switching to a more modern browser!`);
 }
 
 
-
+})();
 
 
 
