@@ -3,32 +3,112 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title></title>
+  <title>REC30s</title>
   <link rel="stylesheet" href="">
+
+  <style>
+    html {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0px;
+      padding: 0px;
+      box-shadow: inset 0px 0px 100px 0px #c5c5c5;
+    }
+    *, *:before, *:after {
+      box-sizing: inherit;
+      font-family: sans-serif;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .record {
+      border-radius: 100%;
+      min-height: 100px;
+      min-width: 100px;
+      /* background: #ea1f1f; */
+      background: #ff2626;
+      border-style: none;
+      font-size: 2em;
+      font-weight: 900;
+      box-shadow: 0px 0px 3px 1px #aaa;
+      font-family: "Helvetica Neue", sans-serif;
+      color: white;
+    }
+    .recordings-list article {
+      border-bottom: 1px solid black;
+      padding-bottom: 21px;
+    }
+
+    .logo {
+      font-weight: bold;
+      color: red;
+      text-transform: uppercase;
+      text-shadow: 0px 0px 5px;
+    }
+
+    h1 {
+      font-weight: 200;
+      font-size: 2.5em;
+    }
+
+    .details {
+      font-size: 1.1em;
+      margin-top: 0px;
+      font-weight: 100;
+      text-align: center;
+    }
+
+    em {
+      font-weight: 100;
+      font-size: 0.75em;
+    }
+
+  </style>
 </head>
 <body>
 
-    <h1>time:</h1>
+<div class="container">
+
+    <h1><span class="logo">rec</span>30s</h1>
+    <p class="details">A simple, 30 second long audio recorder. <br>
+     Stop when you need to. Save when you want to. <br><br>
+     At a press of a button.<br></p class="details">
+
     <p><span class="time">0</span> of 30 seconds left</p>
+
     <br>
 
-    <button class="record">record</button>
-    <button class="stop">Stop</button>
+    <button class="record">REC</button>
 
     <hr>
     <br>
-    <div class="body"></div>
+    <div class="recordings-list">
+
+    </div>
+
+    <p><em>Coded By Dave Barthly</em></p>
+
+</div>
+
+
 
 <script>
 
 var record = document.querySelector('.record');
-var stop = document.querySelector('.stop');
-var soundClips = document.querySelector('.body');
+var soundClips = document.querySelector('.recordings-list');
 var time = document.querySelector('.time');
 var timer;
-
-
-stop.disabled = true; // Keep stop button off until recording is made
+var isRecording = true;
 
 // Count up to 30 seconds w/ Reset conditional
 function countTo30EachSecond() {
@@ -37,11 +117,10 @@ function countTo30EachSecond() {
     if (secondsCounter < 30) {
       secondsCounter += 1;
     } else {
-      resetTimer();
-      stop.click();
+      record.click();
     }
     time.innerHTML = secondsCounter;
-  }, 1000)
+  }, 1000);
 }
 
 function resetTimer() {
@@ -61,26 +140,26 @@ if (navigator.getUserMedia) {
     var mediaRecorder = new MediaRecorder(stream);
 
     record.onclick = function() {
-      countTo30EachSecond();
-      mediaRecorder.start();
-      record.style.background = "red";
-      stop.disabled = false;
-      record.disabled = true;
-    };
-
-    stop.onclick = function() {
-      resetTimer()
-      mediaRecorder.stop();
-      record.style.background = "";
-      record.style.color = "";
-      stop.disabled = true;
-      record.disabled = false;
+      if (isRecording) {
+        isRecording = false;
+        countTo30EachSecond();
+        mediaRecorder.start();
+        record.textContent = "▉";
+        record.style.background = "red";
+      } else {
+        isRecording = true;
+        resetTimer();
+        mediaRecorder.stop();
+        record.textContent = "REC";
+        record.style.background = "";
+        record.style.color = "";
+      }
     };
 
     mediaRecorder.onstop = function(e) {
       console.log("data available after MediaRecorder.stop() called.");
 
-      var clipName = prompt('Enter a name for your sound clip?','My unnamed clip');
+      var clipName = prompt('Enter a name for your sound clip?', 'My unnamed clip');
       console.log(clipName);
       var clipContainer = document.createElement('article');
       var clipLabel = document.createElement('p');
@@ -93,7 +172,7 @@ if (navigator.getUserMedia) {
       deleteButton.textContent = 'Delete';
       deleteButton.className = 'delete';
 
-      if(clipName === null) {
+      if (clipName === null) {
         clipLabel.textContent = 'My unnamed clip';
       } else {
         clipLabel.textContent = clipName;
@@ -107,7 +186,7 @@ if (navigator.getUserMedia) {
 
 
       audio.controls = true;
-      var blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
+      var blob = new Blob(chunks, { 'type' : 'audio/mp3; codecs=opus' });
       chunks = [];
       var audioURL = window.URL.createObjectURL(blob);
       audio.src = audioURL;
@@ -119,12 +198,12 @@ if (navigator.getUserMedia) {
       deleteButton.onclick = function(e) {
         eventTarget = e.target;
         eventTarget.parentNode.parentNode.removeChild(evtTgt.parentNode);
-      }
-    }
+      };
+    };
 
     mediaRecorder.ondataavailable = function(e) {
       chunks.push(e.data);
-    }
+    };
   };
 
   // Fail
@@ -135,7 +214,7 @@ if (navigator.getUserMedia) {
   navigator.getUserMedia(constraints, onSuccess, onError);
 
 } else {
-  alert(`Your broswer doesn't support media devices. Try switching to a more modern browser!`);
+  alert("Your broswer doesn't support media devices. Try switching to a more modern browser!");
 }
 
 
