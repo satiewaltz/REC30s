@@ -6,28 +6,30 @@
 ////  Table of Contents - Ctrl+F #(number) to browse /////////
 // #1 - Declare Variables
 // #2 - Timer Section
-// #3 - Audio Element Events Section
-
+// #3 - MediaRecorder Section
+// #4 - Click Event handlers Section
+// #5 - Audio Element Playback Events Section
+//
 // The method of recording audio relies if the user has a browser
 // with the MediaRecorder Web API. If statement checks whether to move
 // forward if they do, otherwise inform user to use modern browswer.
 if (navigator.getUserMedia) {
 
   //// #1 - Declare Variables ////////////////////////////////
-  // Grab elements to display infomation and audio tags
+  // Grab elements to display infomation and audio tags.
   var recordBtn = document.querySelector("label"), // element
-    soundClips = document.querySelector(".sounds-list"), // element
     audio = document.querySelector("audio"), // element
+    recLogo = document.querySelector(".rec-logo"), // element
     currTimeStatus = document.getElementsByClassName("time"), // collection
-    isAudioPlaying = false, // bool - Is it currently playing audio?
-    timer; // func - Is set to a setInterval timer. Needed for clearInt()
+    isAudioPlaying = false, // bool - Used to check if audio is playing.
+    timer; // func - This is set to the setInterval timer.
 
-  // Make button be contorlled by keyboard
+  // Make button be controlled by keyboard.
   document.body.onkeyup = function(e){
     if(e.keyCode == 32){
-      recordBtn.click(); // also fires resetTimer()
+      recordBtn.click(); // this also fires resetTimer()
     }
-  }
+  };
   //// Section End ///////////////////////////////////////////
 
   //// #2 - Timer Section ////////////////////////////////////
@@ -44,45 +46,51 @@ if (navigator.getUserMedia) {
         secondsCounter -= 1;
       } else {
         secondsCounter = 30;
-        recordBtn.click(); // also fires resetTimer()
+        recordBtn.click(); // Fires resetTimer() as well.
       }
       [...currTimeStatus].forEach(el => el.textContent = secondsCounter);
     }, 1000);
-  }
+  };
 
   var resetTimer = function() {
     window.clearInterval(timer);
     [...currTimeStatus].forEach(el => el.textContent = 30);
-  }
+  };
   //// Section End ///////////////////////////////////////////
 
 
-  //// #5 - MediaRecorder Section ////////////////////////////
-  // Only get data to devices that recieve audio input
-  var constraints = { audio: true };
+  //// #3 - MediaRecorder Section ////////////////////////////
+  // Only get data to devices that recieve audio input.
   // Store data from audio stream in here when recording is finished.
+  var constraints = { audio: true };
   var chunks = [];
   //
   // Trigger if audio stream is avaliable.
   var onSuccess = function(stream) {
     var mediaRecorder = new MediaRecorder(stream);
 
-    //// #3 - Click Event handlers Section /////////////////////
+    //// #4 - Click Event handlers Section /////////////////////
+    // Enables controls for recording
     var controlRecording = function() {
-      if (mediaRecorder.state === "recording") { // stop recording - if it is recording
+      if (mediaRecorder.state === "recording") {
+        // This stops recordings if it is occuring.
         resetTimer();
-        mediaRecorder.stop(); // stop method triggers audio to play
+        mediaRecorder.stop(); // Stop method triggers audio to play.
         recordBtn.classList.remove('now-recording');
         recordBtn.onclick = controlPlaying;
-      } else { // else start recording
+        recLogo.style.color = "green";
+        recLogo.textContent = "PLAY";
+      } else {
+       // Otherwise, start recording.
         startTimer();
         mediaRecorder.start();
         recordBtn.textContent = "";
         recordBtn.classList.add('now-recording');
+        recLogo.style.textShadow = "0px 0px 5px";
       }
-      console.log(mediaRecorder.state);
     };
-
+    // Enables controls for playback. Gets applied to
+    // click event when recording is finished.
     var controlPlaying = function() {
       if (isAudioPlaying) {
         audio.pause();
@@ -91,25 +99,30 @@ if (navigator.getUserMedia) {
         audio.play();
         isAudioPlaying = true;
       }
-    }
+    };
     //// Section End ///////////////////////////////////////////
 
-    //// #4 - Audio Element Events Section /////////////////////
-    // Event handler when audio tag is playing
+
+    //// #5 - Audio Element Events Section /////////////////////
+    // These events handle styling when recording is finished,
+    // and audio is played back automatically.
+    //
+    // Event handler when audio tag is playing.
     audio.addEventListener("playing", function() {
       recordBtn.classList.add('now-playing');
       recordBtn.style.background = "green";
       isAudioPlaying = true;
     }, false);
-    // Event handler when audio tag is paused
-
+    // Event handler when audio tag is started from a pause
     audio.addEventListener("play", function() {
       recordBtn.classList.remove('now-paused');
+      recLogo.style.textShadow = "0px 0px 5px";
     }, false);
-
+    // Event handler when is paused
     audio.addEventListener("pause", function() {
       recordBtn.classList.remove('now-playing');
       recordBtn.classList.add('now-paused');
+      recLogo.style.textShadow = "0px 0px";
       isAudioPlaying = false;
     }, false);
     // Event handler when audio ends
@@ -118,12 +131,16 @@ if (navigator.getUserMedia) {
       recordBtn.classList.remove('now-paused');
       recordBtn.style.background = "#ca0000";
       recordBtn.textContent = "REC";
+      recLogo.textContent = "REC";
+      recLogo.style.color = "#ca0000";
+      recLogo.style.textShadow = "0px 0px";
       recordBtn.onclick = controlRecording;
       isAudioPlaying = false;
     }, false);
     //// Section End ///////////////////////////////////////////
 
-    // Button click event handler
+
+    // Defaults button to control recording first.
     recordBtn.onclick = controlRecording;
 
     // Recording on stop event handler
@@ -131,8 +148,7 @@ if (navigator.getUserMedia) {
       var blob = new Blob(chunks, { "type" : "audio/mp3; codecs=opus" });
       chunks = [];
       audio.src = window.URL.createObjectURL(blob); // Set data from recording to audio tag.
-      audio.play(); // Audio tag plays, triggering the events to show user it is playing.
-      console.log("recorder stopped");
+      audio.play(); // Audio tag plays, triggering audio events to show user sound is playing.
     };
 
     // Store data whenever it is avaliable to begin processing it.
@@ -148,6 +164,7 @@ if (navigator.getUserMedia) {
 
   // Activate media stream.
   navigator.getUserMedia(constraints, onSuccess, onError);
+
   //// Section End ///////////////////////////////////////////
 
 } else {
