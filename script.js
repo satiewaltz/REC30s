@@ -163,6 +163,7 @@ if (navigator.getUserMedia) {
       chunks = [];
       audio.src = window.URL.createObjectURL(blob); // Set data from recording to audio tag.
       document.title = "REC30s";
+      audio.volume = 1;
       audio.play(); // Audio tag plays, triggering audio events to show user sound is playing.
     };
 
