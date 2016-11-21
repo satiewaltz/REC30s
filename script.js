@@ -48,7 +48,9 @@ if (navigator.getUserMedia) {
         secondsCounter = 30;
         recordBtn.click(); // Fires resetTimer() as well.
       }
+      // Change text content on page to reflect time passing.
       [...currTimeStatus].forEach(el => el.textContent = secondsCounter);
+      document.title = recLogo.textContent + secondsCounter + "s";
     }, 1000);
   };
 
@@ -125,7 +127,7 @@ if (navigator.getUserMedia) {
       recLogo.style.textShadow = "0px 0px";
       isAudioPlaying = false;
     }, false);
-    // Event handler when audio ends
+    // Event handler when audio ends. Everything should be reseted by here.
     audio.addEventListener("ended", function() {
       recordBtn.classList.remove('now-playing');
       recordBtn.classList.remove('now-paused');
@@ -148,6 +150,7 @@ if (navigator.getUserMedia) {
       var blob = new Blob(chunks, { "type" : "audio/mp3; codecs=opus" });
       chunks = [];
       audio.src = window.URL.createObjectURL(blob); // Set data from recording to audio tag.
+      document.title = "REC30s";
       audio.play(); // Audio tag plays, triggering audio events to show user sound is playing.
     };
 
