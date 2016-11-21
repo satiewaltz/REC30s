@@ -10,7 +10,7 @@ body {
 *:before,
 *:after {
     box-sizing: inherit;
-    font-family: sans-serif;
+    font-family: "Helvetica Neue", sans-serif;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -46,7 +46,6 @@ audio {
     font-size: 2em;
     font-weight: 900;
     box-shadow: 0px 0px 3px 1px #aaa;
-    font-family: "Helvetica Neue", sans-serif;
     color: white;
     outline: none;
     transition: background 300ms, box-shadow 200ms;
@@ -67,20 +66,21 @@ audio {
     font-weight: bold;
     color: #ca0000;
     text-transform: uppercase;
+    transition: text-shadow 170ms;
 }
 .header-text {
     text-align: center;
     margin-bottom: 10px;
     font-weight: 200;
     font-size: 2.5em;
-    margin-top: 0px;
+    margin: 0px;
 }
 .details {
     margin-top: 0px;
     font-size: 0.90em;
-    font-weight: 100;
+    font-weight: 300;
     text-align: center;
-    line-height: 1.4;
+    line-height: 1.5;
 }
 /* END ******************************************************************** */
 
@@ -92,12 +92,13 @@ h3 {
     text-align: center;
 }
 ol {
-    line-height: 1.6;
+  line-height: 1.6;
 }
 
 .instructions {
     font-size: 0.9em;
-    height: 0px;
+    font-weight: 300;
+    height: 10px;
     overflow: hidden;
     transition-timing-function: ease-in-out;
     transition: height 520ms;
@@ -108,13 +109,15 @@ ol {
 /* END ******************************************************************** */
 
 footer {
-    opacity: 0.5;
     margin: 0px;
     font-size: 0.75em;
     font-weight: 100;
     text-align: center;
 }
-
+hr {
+  width: 190px;
+  border: 1px ridge;
+}
 /* ************************************************************************ */
 /* Spacebar styling */
 
@@ -161,39 +164,39 @@ kbd.light {
 /* Classes get applied on label (recordBtn) depending on what event happens */
 /* Shows stop icon */
 .now-recording:after {
-  content: "";
-  position: absolute;
-  width: 31px;
-  height: 31px;
-  background: white;
-  box-shadow: 0px 0px 10px;
-  margin-top: 1px;
+    content: "";
+    position: absolute;
+    width: 31px;
+    height: 31px;
+    background: white;
+    box-shadow: 0px 0px 10px;
+    margin-top: 1px;
 }
 .now-playing,
 .now-paused {
-  background: green;
+    background: green;
 }
 /* Shows play icon */
 .now-paused:after {
-  content: "►";
-  position: absolute;
-  width: 31px;
-  height: 31px;
-  margin-top: 1px;
-  margin-top: -7px;
-  font-size: 1.28em;
+    content: "►";
+    position: absolute;
+    width: 31px;
+    height: 31px;
+    margin-top: 1px;
+    margin-top: -8px;
+    font-size: 1.28em;
 }
 /* Shows pause icon */
 .now-playing:after {
-  content: "▐▐";
-  position: absolute;
-  width: 31px;
-  height: 31px;
-  margin-top: -3px;
-  font-size: 1em;
-  margin-left: -9px;
-  text-shadow: 0px 0px 10px;
-  transform: scale(1,0.85);
+    content: "▐▐";
+    position: absolute;
+    width: 31px;
+    height: 31px;
+    margin-top: -3px;
+    font-size: 1em;
+    margin-left: -9px;
+    text-shadow: 0px 0px 10px;
+    transform: scale(1,0.85);
 }
 /* END ******************************************************************** */
 
