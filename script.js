@@ -49,14 +49,26 @@ if (navigator.getUserMedia) {
         recordBtn.click(); // Fires resetTimer() as well.
       }
       // Change text content on page to reflect time passing.
-      [...currTimeStatus].forEach(el => el.textContent = secondsCounter);
+      try {
+        // Error handling if user doesn't have ES6
+        [...currTimeStatus].forEach(el => el.textContent = secondsCounter);
+      }
+      catch (e) {
+        return;
+      }
       document.title = recLogo.textContent + secondsCounter + "s";
     }, 1000);
   };
 
   var resetTimer = function() {
     window.clearInterval(timer);
-    [...currTimeStatus].forEach(el => el.textContent = 30);
+    try {
+      // Error handling if user doesn't have ES6
+      [...currTimeStatus].forEach(el => el.textContent = 30);
+    }
+    catch (e) {
+      return;
+    }
   };
   //// Section End ///////////////////////////////////////////
 
@@ -171,8 +183,8 @@ if (navigator.getUserMedia) {
   //// Section End ///////////////////////////////////////////
 
 } else {
-  alert(`Your broswer doesn't support audio recording.
-         Try switching to a more modern browser!`);
+  alert("Your broswer doesn't support audio recording...\n" +
+    "Try switching to a more modern browser!");
 }
 
 // End of code
