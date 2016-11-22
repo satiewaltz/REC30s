@@ -1,5 +1,5 @@
 # 🎙 REC30s
-One click 30 recordings made easy.
+One click 30 second recordings made easy.
 
 _Make sure your volume is up to hear back audio!_
 
