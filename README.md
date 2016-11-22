@@ -1,5 +1,6 @@
 # 🎙 REC30s
 One click 30 second recordings made easy.
+Accomplished with the [MediaRecorder API](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder).
 
 _Make sure your volume is up to hear back audio!_
 
