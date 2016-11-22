@@ -38,6 +38,16 @@ if (navigator.getUserMedia) {
   // These merely define the limit of the recordings,
   // as well as restarting the countdown on new recordings.
   //
+  // Change text content on page to reflect time passing.
+  var updateTimeText = function(param) {
+    try {
+    // Error handling if user doesn't have ES6
+      [...currTimeStatus].forEach(el => el.textContent = param);
+    }
+    catch (e) {
+      return;
+    }
+  }
   // Count up to 30 seconds w/ Reset conditional
   var startTimer = function() {
     var secondsCounter = 30;
@@ -48,27 +58,14 @@ if (navigator.getUserMedia) {
         secondsCounter = 30;
         recordBtn.click(); // Fires resetTimer() as well.
       }
-      // Change text content on page to reflect time passing.
-      try {
-        // Error handling if user doesn't have ES6
-        [...currTimeStatus].forEach(el => el.textContent = secondsCounter);
-      }
-      catch (e) {
-        return;
-      }
+      updateTimeText(secondsCounter);
       document.title = recLogo.textContent + secondsCounter + "s";
     }, 1000);
   };
-
+  // Reset timer & time text
   var resetTimer = function() {
     window.clearInterval(timer);
-    try {
-      // Error handling if user doesn't have ES6
-      [...currTimeStatus].forEach(el => el.textContent = 30);
-    }
-    catch (e) {
-      return;
-    }
+    updateTimeText(30);
   };
   //// Section End ///////////////////////////////////////////
 
